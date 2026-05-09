@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<title>Smart Reminder</title>
+
+<style>
+body{
+  background:#0f172a;
+  color:white;
+  font-family:Arial;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:100vh;
+  margin:0;
+}
+
+.container{
+  background:#1e293b;
+  padding:25px;
+  border-radius:15px;
+  width:420px;
+  text-align:center;
+}
+
+input{
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+  border:none;
+  border-radius:8px;
+}
+
+button{
+  margin-top:15px;
+  padding:10px 15px;
+  border:none;
+  border-radius:8px;
+  background:#38bdf8;
+  cursor:pointer;
+}
+
+.item{
+  background:#334155;
+  margin-top:10px;
+  padding:10px;
+  border-radius:10px;
+  text-align:left;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>🔔 Smart Reminder</h1>
+
+<input id="text" placeholder="Reminder text">
+
+<input type="time" id="time">
+
+<button onclick="addReminder()">➕ Add Reminder</button>
+
+<div id="list"></div>
+
+</div>
+
+<script>
+let reminders =
+  JSON.parse(localStorage.getItem("reminders")) || [];
+
+function save(){
+  localStorage.setItem(
+    "reminders",
+    JSON.stringify(reminders)
+  );
+}
+
+function addReminder(){
+
+  const text =
+    document.getElementById("text").value;
+
+  const time =
+    document.getElementById("time").value;
+
+  if(!text || !time) return;
+
+  reminders.push({text,time});
+
+  save();
+
+  render();
+
+  document.getElementById("text").value = "";
+}
+
+function remove(i){
+
+  reminders.splice(i,1);
+
+  save();
+
+  render();
+}
+
+function render(){
+
+  const list =
+    document.getElementById("list");
+
+  list.innerHTML = "";
+
+  reminders.forEach((r,i)=>{
+
+    list.innerHTML += `
+      <div class="item">
+        🔔 ${r.text}
+        <br>
+        ⏰ ${r.time}
+
+        <br><br>
+
+        <button onclick="remove(${i})">
+          ❌ Delete
+        </button>
+      </div>
+    `;
+  });
+}
+
+setInterval(()=>{
+
+  const now = new Date();
+
+  const current =
+    now.getHours().toString().padStart(2,"0")
+    + ":" +
+    now.getMinutes().toString().padStart(2,"0");
+
+  reminders.forEach(r=>{
+
+    if(r.time === current){
+
+      alert("🔔 Reminder: " + r.text);
+
+    }
+
+  });
+
+},1000);
+
+render();
+</script>
+
+</body>
+</html>
